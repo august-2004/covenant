@@ -1,0 +1,15 @@
+{
+  "name": "admin-side",
+  "version": "1.0.0",
+  "description": "The admin console of the project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "covenant"
+  },
+  "author": "Vanjinathan and The Seven Stars",
+  "license": "ISC"
+}
