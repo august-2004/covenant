@@ -11,5 +11,8 @@
     "url": "covenant"
   },
   "author": "Vanjinathan and The Seven Stars",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
 }
