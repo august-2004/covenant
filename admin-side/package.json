@@ -13,6 +13,7 @@
   "author": "Vanjinathan and The Seven Stars",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "mongodb": "^6.9.0"
   }
 }
