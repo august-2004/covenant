@@ -1,7 +1,9 @@
-import express, { request } from "express";
+import "dotenv/config"; 
+import express from "express";
 import mongoose from "mongoose";
 import itemRouter from "./Routes/ItemRoutes.mjs"; 
 import orderRouter from "./Routes/OrderRoutes.mjs";
+
 
 const app = express();
 
@@ -15,7 +17,7 @@ app.use(express.json());
 app.use(itemRouter);
 app.use(orderRouter);
 
-mongoose.connect("mongodb://localhost/CanteenDB")
+mongoose.connect(process.env.MONGO_URI)
 .then(()=>{
   console.log("Database connected")
 }).catch((err)=>{
