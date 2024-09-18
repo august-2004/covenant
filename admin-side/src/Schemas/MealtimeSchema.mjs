@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 
 const MealtimeSchema = new mongoose.Schema({
-  itemName :{
+  mealtime :{
     type: String,
     required: true,
     unique:true,
