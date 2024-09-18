@@ -1,0 +1,89 @@
+/* General styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fef6f9; /* Light pinkish background */
+  }
+  
+  h1 {
+    font-size: 36px; /* Larger font size */
+    margin-bottom: 20px;
+    color: #5f2e3a; /* Light pink color */
+    font-weight: 300; /* Light font weight for a lighter look */
+  }
+  
+  .menu {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Increased gap between items */
+    margin-bottom: 30px;
+  }
+  
+  .food-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px; /* Increased padding for a larger box */
+    border: 1px solid #f5d7d9; /* Light pink border */
+    background-color: #fdf1f3; /* Very light neutral pink */
+    border-radius: 15px; /* Larger border radius for rounded corners */
+    width: 400px; /* Increased width for larger boxes */
+    margin: 0 auto;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Larger shadow for bigger boxes */
+  }
+  
+  .food-item span {
+    font-size: 18px; /* Larger font size for better readability */
+    color: #6e4c4c; /* Neutral brownish text */
+  }
+  
+  button {
+    padding: 7px 20px; /* Increased padding for better button size */
+    font-size: 16px; /* Larger font size for better readability */
+    color: #fff;
+    background-color: #ff6b81; /* Aesthetic soft pink for buttons */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #e66474; /* Darker pink on hover */
+  }
+  
+  .confirm-btn {
+    padding: 15px 40px; /* Increased padding for better button size */
+    background-color: #ff8fa3; /* Slightly different pink for confirm button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+  }
+  
+  .confirm-btn:hover {
+    background-color: #ff6b81;
+  }
+  
+  /* For a more rounded and smooth aesthetic */
+  .food-item, .confirm-btn, button {
+    border-radius: 10px;
+  }
+  
+  .App {
+    text-align: center;
+    background-image: url('../assets/wp3104899-fresh-veggies-wallpapers.jpg'); 
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
