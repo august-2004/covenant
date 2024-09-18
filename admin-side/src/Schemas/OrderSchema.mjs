@@ -10,6 +10,12 @@ const orderSchema = mongoose.Schema({
     required : true,
     lowercase: true
   },
+  mealTime:{
+    type: mongoose.Schema.Types.String,
+    enum: ["breakfast", "lunch", "dinner"],
+    required : true,
+    lowercase: true
+  },
   quantity:{
     type: mongoose.Schema.Types.Number,
     required: true,

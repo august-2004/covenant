@@ -7,11 +7,11 @@ const orderRouter = new Router();
 orderRouter.post('/orders',async (request,response)=>{
   try{
     const { body } = request;
-    const { itemName,quantity:incrementBy } = body;
+    const {  itemName, mealTime, quantity:incrementBy} = body;
     const itemPresent = await Item.findOneAndUpdate(
-      {itemName},
+      { itemName,mealTime },
       { $inc:{ quantity : incrementBy }},
-      { new : true}
+      { new : true }
     );
     console.log(itemPresent);
     if(itemPresent!=null){
@@ -28,6 +28,8 @@ orderRouter.post('/orders',async (request,response)=>{
 
 orderRouter.get('/orders', async (request,response)=>{
   try{
+    // await Order.deleteMany({});
+    // response.status(200).send("Collection deleted");
     const allOrders = await Order.find({});
     response.status(200).send(allOrders);
   }catch(err){
