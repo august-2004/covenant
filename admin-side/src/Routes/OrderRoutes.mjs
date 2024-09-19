@@ -30,8 +30,15 @@ orderRouter.get('/orders', async (request,response)=>{
   try{
     // await Order.deleteMany({});
     // response.status(200).send("Collection deleted");
-    const allOrders = await Order.find({});
-    response.status(200).send(allOrders);
+    const { query: { filter, value }} = request;
+    if(!filter || !value){
+      const allOrders = await Order.find({});
+      return response.status(200).send(allOrders);
+    }
+    if(filter && value){
+      const orders = await Order.find({ [filter]:value });
+      response.status(200).send(orders);
+    }  
   }catch(err){
     response.status(500).send(err)
   } 
