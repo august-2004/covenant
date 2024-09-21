@@ -44,16 +44,19 @@ const MealtimeSchema = new mongoose.Schema({
 const mealmodel=mongoose.model('mealtime',MealtimeSchema);
 
 const timeUpdate=async(meal,opening,closing)=>{
-  
+   const updateObj={};
+   if(opening){
+    updateObj.openingTime=opening;
+   }
+   if(closing){
+    updateObj.closingTime=closing;
+   }
 
     try{
     const result=await mealmodel.findOneAndUpdate(
       {mealtime:meal},
-      {$set:{
-        openingTime:opening,
-        closingTime:closing
-      }},
-      {new:true},
+      {$set:updateObj},
+      {new:true}
 
     );
     console.log(result);
@@ -61,32 +64,36 @@ const timeUpdate=async(meal,opening,closing)=>{
 }catch(error){
     console.log(error);
 
-}
-    
+}}
 
 
 
 
 
-
-
-    
-   
-
-}
-
-app.post('/settime',async (req,res)=>{
+app.post('/setoptime',async (req,res)=>{
    const mealtime=req.body.mealtime;
    const optime=req.body.optime;
-   const cltime=req.body.cltime;
    try{
-    await timeUpdate(mealtime,optime,cltime);
+    await timeUpdate(mealtime,optime,null);
     res.status(200).send("done");
    }catch(er){
     console.error(er);
     res.status(500).send('error occures');
    }
 })
+
+app.post('/setcltime',async (req,res)=>{
+    const mealtime=req.body.mealtime;
+    const cltime=req.body.cltime;
+    try{
+     await timeUpdate(mealtime,null,cltime);
+     res.status(200).send("done");
+    }catch(er){
+     console.error(er);
+     res.status(500).send('error occures');
+    }
+ })
+
 
 
  mongoose.connect("mongodb+srv://thesevenstarscompany:6gCP3UgjzmaDK7Mj@meals.fgv99.mongodb.net/CanteenDB?retryWrites=true&w=majority&appName=meals")
