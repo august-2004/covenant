@@ -5,12 +5,23 @@ const itemRouter = new Router();
 
 itemRouter.post("/items",async (request,response)=>{
   try{
-    const { body : { itemName, mealTime}} = request;
-    const newItem= new Item({itemName, mealTime});
-    await newItem.save();
-    response.status(200).send(newItem);
+    const { body:items } = request;
+    if (!Array.isArray(items)) {
+      return response.status(400).send({ error: "Request body should be an array of items." });
+    }
+    let savedItems = []
+    for(const item of items){
+      if (!item.itemName || !item.mealTime) {
+        return response.status(400).send({ error: "Each item must have 'itemName' and 'mealTime'." });
+      }
+      const newItem= new Item(item);
+      await newItem.save();
+      savedItems.push(newItem);
+    }
+    response.status(200).send(savedItems);
   }catch(err){
     response.status(500).send(err);
+    console.log(err);
   }
 });
 
