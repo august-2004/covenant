@@ -1,6 +1,7 @@
 import { Order } from "../Schemas/OrderSchema.mjs";
 import { Item } from "../Schemas/ItemSchema.mjs";
 import { Router } from "express";
+import { timeValidator } from "../Validators/timeValidator.mjs";
 
 const orderRouter = new Router();
 
@@ -18,21 +19,30 @@ orderRouter.post('/orders',async (request,response)=>{
         continue;
       }
       const {  itemName, mealTime, quantity:incrementBy} = order;
-      const itemPresent = await Item.findOneAndUpdate(
-        { itemName,mealTime },
-        { $inc:{ quantity : incrementBy }},
-        { new : true }
-      );
-      console.log(itemPresent);
-      if(itemPresent!=null){
-        const newOrder = new Order(order);
-        await newOrder.save();
-        savedOrders.push(newOrder);
-      }else{
-        unsavedOrders.push({ order: order, error: `Item ${itemName} for mealtime ${mealTime} not found` });
+      if(await timeValidator(mealTime)){
+        const itemPresent = await Item.findOneAndUpdate(
+          { itemName,mealTime },
+          { $inc:{ quantity : incrementBy }},
+          { new : true }
+        );
+        console.log(itemPresent);
+        if(itemPresent!=null){
+          const newOrder = new Order(order);
+          await newOrder.save();
+          savedOrders.push(newOrder);
+          const now = new Date()
+          console.log(`${now.getHours()} and ${now.getMinutes()}`);
+        }else{
+          unsavedOrders.push({ order: order, error: `Item ${itemName} for mealtime ${mealTime} not found` });
+          continue;
+        }
+      }
+      else{
+        unsavedOrders.push({ order: order, error: "Time limit exceeded"});
         continue;
       }
-    }
+      }
+
     if(savedOrders.length !==0){
       return response.status(200).send({ savedOrders: savedOrders, unsavedOrders: unsavedOrders }); 
     }

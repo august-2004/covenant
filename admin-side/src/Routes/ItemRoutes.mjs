@@ -15,7 +15,6 @@ itemRouter.post("/items",async (request,response)=>{
       if (!item.itemName || !item.mealTime) {
         unsavedItems.push({ item:item, error:"Each item must have 'itemName' and 'mealTime'." });
         continue;
-        return response.status(400).send({ error: "Each item must have 'itemName' and 'mealTime'." });
       }
       const newItem= new Item(item);
       await newItem.save();
