@@ -22,8 +22,13 @@ const orderSchema = mongoose.Schema({
     min: 1
   },
   createdAt:{
-    type : mongoose.Schema.Types.Date,
-    default : ()=> Date.now()
+    type : mongoose.Schema.Types.String,
+    default : ()=>{
+      const now = new Date;
+      const minutes = now.getMinutes()<10? `0${now.getMinutes()}`:`${now.getMinutes()}`;
+      const hours = now.getHours()<10? `0${now.getHours()}`:`${now.getHours()}`;
+      return `${hours}:${minutes}`;
+    }
   }
 
 });

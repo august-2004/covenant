@@ -48,4 +48,24 @@ itemRouter.get("/items", async (request,response)=>{
   } 
 });
 
+itemRouter.delete("/items", async (request,response)=>{
+  try{
+    const { mealTime, itemName } = request.query;
+    if(!mealTime || !itemName){
+      return response.status(400).send("ItemName and/or Mealtime fields empty");
+    }
+    if(mealTime && itemName){
+      const deletedItem = await Item.findOneAndDelete({ itemName : itemName, mealTime : mealTime });
+      if(deletedItem){
+        return response.status(200).send({item: deletedItem, status: "Deleted successfully"});
+      }
+      return response.status(422).send({ item: deletedItem, status: "Not deleted"});
+    }
+  }catch(err){
+    console.log(err);
+    response.status(500).send({error: err});
+  }
+
+});
+
 export default itemRouter;
