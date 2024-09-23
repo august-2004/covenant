@@ -1,0 +1,27 @@
+admin-side/node_modules/
+admin-side/.env
+student-side/node_modules/
+student-side/.env
+
+# Logs
+student-side/logs
+student-side/*.log
+student-side/npm-debug.log*
+student-side/yarn-debug.log*
+student-side/yarn-error.log*
+student-side/pnpm-debug.log*
+student-side/lerna-debug.log*
+student-side/node_modules
+student-side/dist
+student-side/dist-ssr
+student-side/*.local
+student-side/# Editor directories and files
+student-side/.vscode/*
+student-side/!.vscode/extensions.json
+student-side/.idea
+student-side/.DS_Store
+student-side/*.suo
+student-side/*.ntvs*
+student-side/*.njsproj
+student-side/*.sln
+student-side/*.sw?
