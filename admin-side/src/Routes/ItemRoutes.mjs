@@ -9,16 +9,22 @@ itemRouter.post("/items",async (request,response)=>{
     if (!Array.isArray(items)) {
       return response.status(400).send({ error: "Request body should be an array of items." });
     }
-    let savedItems = []
+    let savedItems = [];
+    let unsavedItems =[];
     for(const item of items){
       if (!item.itemName || !item.mealTime) {
+        unsavedItems.push({ item:item, error:"Each item must have 'itemName' and 'mealTime'." });
+        continue;
         return response.status(400).send({ error: "Each item must have 'itemName' and 'mealTime'." });
       }
       const newItem= new Item(item);
       await newItem.save();
       savedItems.push(newItem);
     }
-    response.status(200).send(savedItems);
+    if(savedItems.length !== 0){
+      return response.status(200).send({ savedItems : savedItems, unsavedItems : unsavedItems });
+    }
+    response.status(400).send({ savedItems : savedItems, unsavedItems : unsavedItems });
   }catch(err){
     response.status(500).send(err);
     console.log(err);
