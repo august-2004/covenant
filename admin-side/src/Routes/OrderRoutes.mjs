@@ -2,6 +2,7 @@ import { Order } from "../Schemas/OrderSchema.mjs";
 import { Item } from "../Schemas/ItemSchema.mjs";
 import { Router } from "express";
 import { timeValidator } from "../Validators/timeValidator.mjs";
+import { cancellationTimeValidator } from "../Validators/cancellationTimeValidator.mjs";
 
 const orderRouter = new Router();
 
@@ -30,8 +31,6 @@ orderRouter.post('/orders',async (request,response)=>{
           const newOrder = new Order(order);
           await newOrder.save();
           savedOrders.push(newOrder);
-          const now = new Date()
-          console.log(`${now.getHours()} and ${now.getMinutes()}`);
         }else{
           unsavedOrders.push({ order: order, error: `Item ${itemName} for mealtime ${mealTime} not found` });
           continue;
@@ -98,8 +97,22 @@ const deleteOrder = async (request,response,next)=>{
   }
 }
 
+orderRouter.delete("/orders/cancel/:id",async (request,response,next)=>{
+  try{
+    const { id } = request.params;
+    const isValid = await cancellationTimeValidator(id);
+    if(isValid){
+      next();
+    }else{
+      return response.status(400).send("Cancellation Time Limit exceeded");
+    }  
+  }catch(err){
+    console.log(err);
+    response.status(500).send(err);
+  }
+  
+},deleteOrder);
 
-
-orderRouter.delete("/orders/:id", deleteOrder );
+orderRouter.delete("/orders/:id",deleteOrder );
 
 export default orderRouter;
