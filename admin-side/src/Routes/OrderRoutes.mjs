@@ -71,4 +71,35 @@ orderRouter.get('/orders', async (request,response)=>{
   } 
 });
 
+const deleteOrder = async (request,response,next)=>{
+  try{
+    const { id } = request.params;
+  let orderToDelete = await Order.findById(id);
+  if(!orderToDelete){
+    return response.status(404).send({ status: "Order not found" });
+  }
+  const { itemName, mealTime, quantity:decrementBy } = orderToDelete;
+  const itemUpdation = await Item.findOneAndUpdate(
+    { itemName, mealTime },
+    { $inc : { quantity: -decrementBy }},
+    { new : true }
+  );
+  if(!itemUpdation){
+    return response.status(422).send({ status : "Failed to update item quantity"});
+  }
+  const deletedOrder= await Order.findByIdAndDelete(id);
+  if(deletedOrder){
+    return response.status(200).send({ deletedOrder: deletedOrder, status: "Order deletion successful" });
+  }
+  return response.status(422).send({ status : "Order deletion unsuccessful"});
+}catch(err){
+    console.log(err);
+    response.status(500).send(err);
+  }
+}
+
+
+
+orderRouter.delete("/orders/:id", deleteOrder );
+
 export default orderRouter;

@@ -57,9 +57,9 @@ itemRouter.delete("/items", async (request,response)=>{
     if(mealTime && itemName){
       const deletedItem = await Item.findOneAndDelete({ itemName : itemName, mealTime : mealTime });
       if(deletedItem){
-        return response.status(200).send({item: deletedItem, status: "Deleted successfully"});
+        return response.status(200).send({item: deletedItem, status: "Item deleted successfully"});
       }
-      return response.status(422).send({ item: deletedItem, status: "Not deleted"});
+      return response.status(422).send({status: "Item deletion unsuccessful"});
     }
   }catch(err){
     console.log(err);
