@@ -11,14 +11,7 @@ orderRouter.post('/orders',async (request,response)=>{
     const { body:orders } = request;
     let savedOrders = [];
     let unsavedOrders=[];
-    if(!Array.isArray(orders)){
-      return response.status(400).send({ error: "Request body should be an array of items." });
-    }
     for(const order of orders){
-      if(!order.itemName || !order.mealTime || !order.quantity || !order.userID){
-        unsavedOrders.push({ order: order, error: "Each order must contain userID, itemName, mealTime and quantity" });
-        continue;
-      }
       const {  itemName, mealTime, quantity:incrementBy} = order;
       if(await timeValidator(mealTime)){
         const itemPresent = await Item.findOneAndUpdate(
@@ -26,8 +19,7 @@ orderRouter.post('/orders',async (request,response)=>{
           { $inc:{ quantity : incrementBy }},
           { new : true }
         );
-        console.log(itemPresent);
-        if(itemPresent!=null){
+        if(itemPresent){
           const newOrder = new Order(order);
           await newOrder.save();
           savedOrders.push(newOrder);
@@ -41,11 +33,7 @@ orderRouter.post('/orders',async (request,response)=>{
         continue;
       }
       }
-
-    if(savedOrders.length !==0){
       return response.status(200).send({ savedOrders: savedOrders, unsavedOrders: unsavedOrders }); 
-    }
-    response.status(400).send({ savedOrders: savedOrders, unsavedOrders: unsavedOrders });
   }catch(err){
     response.status(500).send(err);
     console.log(err);
