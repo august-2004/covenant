@@ -2,6 +2,7 @@ import { Order } from "../Schemas/OrderSchema.mjs";
 import { Item } from "../Schemas/ItemSchema.mjs";
 import { Router } from "express";
 import { timeValidator } from "../Validators/timeValidator.mjs";
+import { cancellationTimeValidator } from "../Validators/cancellationTimeValidator.mjs";
 
 const orderRouter = new Router();
 
@@ -10,14 +11,7 @@ orderRouter.post('/orders',async (request,response)=>{
     const { body:orders } = request;
     let savedOrders = [];
     let unsavedOrders=[];
-    if(!Array.isArray(orders)){
-      return response.status(400).send({ error: "Request body should be an array of items." });
-    }
     for(const order of orders){
-      if(!order.itemName || !order.mealTime || !order.quantity || !order.userID){
-        unsavedOrders.push({ order: order, error: "Each order must contain userID, itemName, mealTime and quantity" });
-        continue;
-      }
       const {  itemName, mealTime, quantity:incrementBy} = order;
       if(await timeValidator(mealTime)){
         const itemPresent = await Item.findOneAndUpdate(
@@ -25,13 +19,10 @@ orderRouter.post('/orders',async (request,response)=>{
           { $inc:{ quantity : incrementBy }},
           { new : true }
         );
-        console.log(itemPresent);
-        if(itemPresent!=null){
+        if(itemPresent){
           const newOrder = new Order(order);
           await newOrder.save();
           savedOrders.push(newOrder);
-          const now = new Date()
-          console.log(`${now.getHours()} and ${now.getMinutes()}`);
         }else{
           unsavedOrders.push({ order: order, error: `Item ${itemName} for mealtime ${mealTime} not found` });
           continue;
@@ -42,11 +33,7 @@ orderRouter.post('/orders',async (request,response)=>{
         continue;
       }
       }
-
-    if(savedOrders.length !==0){
       return response.status(200).send({ savedOrders: savedOrders, unsavedOrders: unsavedOrders }); 
-    }
-    response.status(400).send({ savedOrders: savedOrders, unsavedOrders: unsavedOrders });
   }catch(err){
     response.status(500).send(err);
     console.log(err);
@@ -70,5 +57,50 @@ orderRouter.get('/orders', async (request,response)=>{
     response.status(500).send(err)
   } 
 });
+
+const deleteOrder = async (request,response,next)=>{
+  try{
+    const { id } = request.params;
+  let orderToDelete = await Order.findById(id);
+  if(!orderToDelete){
+    return response.status(404).send({ status: "Order not found" });
+  }
+  const { itemName, mealTime, quantity:decrementBy } = orderToDelete;
+  const itemUpdation = await Item.findOneAndUpdate(
+    { itemName, mealTime },
+    { $inc : { quantity: -decrementBy }},
+    { new : true }
+  );
+  if(!itemUpdation){
+    return response.status(422).send({ status : "Failed to update item quantity"});
+  }
+  const deletedOrder= await Order.findByIdAndDelete(id);
+  if(deletedOrder){
+    return response.status(200).send({ deletedOrder: deletedOrder, status: "Order deletion successful" });
+  }
+  return response.status(422).send({ status : "Order deletion unsuccessful"});
+}catch(err){
+    console.log(err);
+    response.status(500).send(err);
+  }
+}
+
+orderRouter.delete("/orders/cancel/:id",async (request,response,next)=>{
+  try{
+    const { id } = request.params;
+    const isValid = await cancellationTimeValidator(id);
+    if(isValid){
+      next();
+    }else{
+      return response.status(400).send("Cancellation Time Limit exceeded");
+    }  
+  }catch(err){
+    console.log(err);
+    response.status(500).send(err);
+  }
+  
+},deleteOrder);
+
+orderRouter.delete("/orders/:id",deleteOrder );
 
 export default orderRouter;
