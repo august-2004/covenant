@@ -4,6 +4,7 @@ import { Router } from "express";
 import { timeValidator } from "../Validators/timeValidator.mjs";
 import { validateOrder } from "../Validators/validationSchema.mjs";
 import {validationResult} from "express-validator";
+import { cancellationTimeValidator } from "../Validators/cancellationTimeValidator.mjs";
 
 const orderRouter = new Router();
 
@@ -16,14 +17,7 @@ orderRouter.post('/orders',validateOrder,async (request,response)=>{
     const { body:orders } = request;
     let savedOrders = [];
     let unsavedOrders=[];
-    if(!Array.isArray(orders)){
-      return response.status(400).send({ error: "Request body should be an array of items." });
-    }
     for(const order of orders){
-      if(!order.itemName || !order.mealTime || !order.quantity || !order.userID){
-        unsavedOrders.push({ order: order, error: "Each order must contain userID, itemName, mealTime and quantity" });
-        continue;
-      }
       const {  itemName, mealTime, quantity:incrementBy} = order;
       if(await timeValidator(mealTime)){
         const itemPresent = await Item.findOneAndUpdate(
@@ -31,13 +25,10 @@ orderRouter.post('/orders',validateOrder,async (request,response)=>{
           { $inc:{ quantity : incrementBy }},
           { new : true }
         );
-        console.log(itemPresent);
-        if(itemPresent!=null){
+        if(itemPresent){
           const newOrder = new Order(order);
           await newOrder.save();
           savedOrders.push(newOrder);
-          const now = new Date()
-          console.log(`${now.getHours()} and ${now.getMinutes()}`);
         }else{
           unsavedOrders.push({ order: order, error: `Item ${itemName} for mealtime ${mealTime} not found` });
           continue;
@@ -48,11 +39,7 @@ orderRouter.post('/orders',validateOrder,async (request,response)=>{
         continue;
       }
       }
-
-    if(savedOrders.length !==0){
       return response.status(200).send({ savedOrders: savedOrders, unsavedOrders: unsavedOrders }); 
-    }
-    response.status(400).send({ savedOrders: savedOrders, unsavedOrders: unsavedOrders });
   }catch(err){
     response.status(500).send(err);
     console.log(err);
@@ -104,8 +91,22 @@ const deleteOrder = async (request,response,next)=>{
   }
 }
 
+orderRouter.delete("/orders/cancel/:id",async (request,response,next)=>{
+  try{
+    const { id } = request.params;
+    const isValid = await cancellationTimeValidator(id);
+    if(isValid){
+      next();
+    }else{
+      return response.status(400).send("Cancellation Time Limit exceeded");
+    }  
+  }catch(err){
+    console.log(err);
+    response.status(500).send(err);
+  }
+  
+},deleteOrder);
 
-
-orderRouter.delete("/orders/:id", deleteOrder );
+orderRouter.delete("/orders/:id",deleteOrder );
 
 export default orderRouter;
