@@ -35,10 +35,8 @@ function QrScanner() {
     
             if (response.status === 404) {
                 setDeleteResult(`NOT approved`);
-                throw new Error('Order not found');
             } 
             else if (!response.ok) {
-                setDeleteResult(`Error in approving order`);
                 throw new Error(`Unexpected error: ${response.status}`);
             }
             else{
@@ -46,7 +44,7 @@ function QrScanner() {
                 setDeleteResult(`Order is approved`);
             }
         } catch (error) {
-          setDeleteResult(`Error in approving order`);
+          setDeleteResult(`Error in approving order, error: ${error}`);
         }
       };
 
