@@ -2,12 +2,18 @@ import { Order } from "../Schemas/OrderSchema.mjs";
 import { Item } from "../Schemas/ItemSchema.mjs";
 import { Router } from "express";
 import { timeValidator } from "../Validators/timeValidator.mjs";
+import { validateOrder } from "../Validators/validationSchema.mjs";
+import {validationResult} from "express-validator";
 import { cancellationTimeValidator } from "../Validators/cancellationTimeValidator.mjs";
 
 const orderRouter = new Router();
 
-orderRouter.post('/orders',async (request,response)=>{
+orderRouter.post('/orders',validateOrder,async (request,response)=>{
   try{
+    const errors=validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+      }
     const { body:orders } = request;
     let savedOrders = [];
     let unsavedOrders=[];

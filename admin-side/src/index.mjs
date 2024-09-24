@@ -9,10 +9,6 @@ const app = express();
 
 const port = process.env.port || 3000;
 
-app.listen(port, ()=>{
-  console.log(`Running on port ${port}`)
-});
-
 app.use(express.json());
 app.use(itemRouter);
 app.use(orderRouter);
@@ -22,6 +18,10 @@ mongoose.connect(process.env.MONGO_URI)
   console.log("Database connected")
 }).catch((err)=>{
   console.log(`Error : ${err}`)
+});
+
+app.listen(port, ()=>{
+  console.log(`Running on port ${port}`)
 });
 
 
