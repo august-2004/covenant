@@ -3,7 +3,7 @@ import { Item } from "../Schemas/ItemSchema.mjs";
 import { Router } from "express";
 import { timeValidator } from "../Validators/timeValidator.mjs";
 import { validateOrder } from "../Validators/validationSchema.mjs";
-import {validationResult, matchedData} from "express-validator";
+import {validationResult} from "express-validator";
 
 const orderRouter = new Router();
 
@@ -13,8 +13,6 @@ orderRouter.post('/orders',validateOrder,async (request,response)=>{
     if (!errors.isEmpty()) {
       return response.status(400).json({ errors: errors.array() });
       }
-     const validatedData= matchedData(request);
-     console.log(validatedData);
     const { body:orders } = request;
     let savedOrders = [];
     let unsavedOrders=[];

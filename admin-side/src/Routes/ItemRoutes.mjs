@@ -1,10 +1,16 @@
 import { Router } from "express";
 import { Item } from "../Schemas/ItemSchema.mjs"
+import { validateItem } from "../Validators/validationSchema.mjs";
+import { validationResult } from "express-validator";
 
 const itemRouter = new Router();
 
-itemRouter.post("/items",async (request,response)=>{
+itemRouter.post("/items", validateItem, async (request,response)=>{
   try{
+    const errors=validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+      }
     const { body:items } = request;
     if (!Array.isArray(items)) {
       return response.status(400).send({ error: "Request body should be an array of items." });
