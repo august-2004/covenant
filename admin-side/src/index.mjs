@@ -3,10 +3,10 @@ import express from "express";
 import mongoose from "mongoose";
 import itemRouter from "./Routes/ItemRoutes.mjs"; 
 import orderRouter from "./Routes/OrderRoutes.mjs";
-
+import cors from 'cors'
 
 const app = express();
-
+app.use(cors())
 const port = process.env.port || 3000;
 
 app.use(express.json());
