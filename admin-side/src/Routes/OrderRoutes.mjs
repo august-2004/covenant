@@ -39,7 +39,13 @@ orderRouter.post('/orders',validateOrder,async (request,response)=>{
         continue;
       }
       }
-      return response.status(200).send({ savedOrders: savedOrders, unsavedOrders: unsavedOrders }); 
+      if(unsavedOrders.length === 0){
+        return response.status(200).send({ savedOrders: savedOrders });
+      }
+      if(savedOrders.length === 0){
+        return response.status(400).send({ unsavedOrders: unsavedOrders });
+      }
+      return response.status(207).send({ savedOrders: savedOrders, unsavedOrders: unsavedOrders});
   }catch(err){
     response.status(500).send(err);
     console.log(err);
