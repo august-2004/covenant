@@ -29,6 +29,14 @@ const orderSchema = mongoose.Schema({
       const hours = now.getHours()<10? `0${now.getHours()}`:`${now.getHours()}`;
       return `${hours}:${minutes}`;
     }
+  },
+  date:{
+    type:mongoose.Schema.Types.String,
+    default: ()=>{
+      const today = new Date;
+      const day = today.toDateString();
+      return `${day}`;
+    }
   }
 
 });
