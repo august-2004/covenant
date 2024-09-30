@@ -1,27 +1,31 @@
 import { useState, useEffect } from "react";
 import OrderItem from "./orderItem";
-function OrderMenu({value}){
+import OrderHistory from "./OrderHistory";
+
+function OrderMenu({value , incrementOrderCount }){
   const [ menu, setMenu ] = useState([]);
   const [ order, setOrder ] = useState([]);
 
-  useEffect(()=>{
-    const fetchMenu = async ()=>{
-      try{
-        const response = await fetch(`http://localhost:3000/items?filter=mealTime&value=${value}`);
-      if(!response.ok){
-        throw new Error("Response not OK");
-      }
-      const data = await response.json();
-      const items = data.map((item)=>(
-       { id: item._id, itemName: item.itemName, mealTime: item.mealTime ,quantity: 0 }
-      ));
-      setMenu(items);
-      }catch(err){
-        console.log(`Error : ${err}`);
-      }
+  const fetchMenu = async ()=>{
+    try{
+      const response = await fetch(`http://localhost:3000/items?filter=mealTime&value=${value}`);
+    if(!response.ok){
+      throw new Error("Response not OK");
     }
-     fetchMenu();
-    
+    const data = await response.json();
+    const items = data.map((item)=>(
+     { id: item._id, itemName: item.itemName, mealTime: item.mealTime ,quantity: 0 }
+    ));
+    setMenu(items);
+    }catch(err){
+      console.log(`Error : ${err}`);
+    }
+  }
+
+  useEffect(()=>{
+
+     fetchMenu();  
+
   },[value]);
 
   const incrementCount = (id)=>{
@@ -71,6 +75,7 @@ function OrderMenu({value}){
       });
       if(response.ok){
         console.log("Order posted", response);
+        incrementOrderCount();
       }else{
         console.log("Order failed");
       } 
@@ -101,4 +106,4 @@ function OrderMenu({value}){
 
 }
 
-export default OrderMenu;
+export default OrderMenu; 

@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import QrMaker from "./QrMaker";
+import CancelButton from "./CancelButton";
+
 function OrderHistory(props){
 
     const [orders,setOrders] = useState([])
+    const { decrementOrderCount } = props;
 
     const fetchOrders = async () =>{
         try{
@@ -18,7 +21,7 @@ function OrderHistory(props){
     }
     useEffect(()=>{
        fetchOrders(); 
-    },[])
+    },[props.orderCount])
 
     return(
         <div>
@@ -28,6 +31,7 @@ function OrderHistory(props){
                     padding: '10px', 
                     margin: '5px'
                   }}>
+
                     <QrMaker className="order-qr" value={order._id}/>
                     <div className="order-id">Order id: {order._id}</div>
                     <div className="order-userID">User ID: {order.userID}</div>
@@ -35,6 +39,8 @@ function OrderHistory(props){
                     <div className="order-mealtime">Mealtime: {order.mealTime}</div>
                     <div className="order-quantity">Quantity: {order.quantity}</div>
                     <div className="order-createdAt">Created At: {order.createdAt}</div>
+                    <div className="order-date">Date: {order.date}</div>
+                    <CancelButton order={order} decrementOrderCount={decrementOrderCount}> </CancelButton>
                 </div>
             ))}
         </div>
