@@ -6,17 +6,6 @@ export const validateOrder = [
   body()
      .isArray().withMessage("Request must be an array of JSON"),
 
-  body('*.userID')
-    .isString().withMessage('User ID must be a string.')
-    .trim().escape()
-    .isLength({ min: 1, max: 30 }).withMessage('User ID must be between 1 and 30 characters.')
-    .custom(value => {
-      if (/[^a-zA-Z0-9]/.test(value)) {
-        throw new Error('User ID must contain only alphanumeric characters.');
-      }
-      return true;
-    }),
-
   body('*.itemName')
     .isString().withMessage('Item name must be a string.')
     .trim().escape()
@@ -55,4 +44,30 @@ body('*.itemName')
     .isIn(['breakfast', 'lunch', 'dinner']).withMessage('Meal time must be one of: breakfast, lunch, dinner.')
     .trim().escape()
     .notEmpty().withMessage('Meal time cannot be empty.')
+  ];
+
+  export const validateLogin = [
+    body('userID')
+      .isString().withMessage('UserID must be a string.')
+      .trim().escape()
+      .isLength({ min: 1, max: 30 }).withMessage('UserID is exceeding the limit')
+      .custom(value => {
+        const sanitizedValue = sanitize(xss(value));  
+        if (/[^a-zA-Z0-9@]/.test(sanitizedValue)) {
+          throw new Error('UserID must contain only alphanumeric characters and @ symbol');
+        }
+        return true;
+      }),
+  
+    body('password')
+      .isString().withMessage('Password must be a string')
+      .trim().escape()
+      .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+      .custom(value => {
+        const sanitizedValue = sanitize(xss(value)); 
+        if (/[^a-zA-Z0-9@]/.test(sanitizedValue)) {
+          throw new Error('Password must contain only alphanumeric characters and @ symbol');
+        }
+        return true;
+      })
   ];
