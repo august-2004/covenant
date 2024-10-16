@@ -14,12 +14,17 @@ passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
         // Use async/await to find the user by id
         const user = await userModel.findById(jwt_payload.id);
         
+<<<<<<< HEAD
         if (user) {
             console.log("User found:", user); // Debugging
             return done(null, user); // User found
         } else {
             console.log("User not found with this id"); // Debugging
             return done(null, false); // No user found
+=======
+        if (!user) {
+            return done(null, false); 
+>>>>>>> de8b0caae94c31a214a51ab56d70ac7107ae355c
         }
     } catch (err) {
         console.log("Error finding user:", err); // Debugging
