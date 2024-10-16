@@ -1,24 +1,23 @@
-const mongoose=require('mongoose');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
-mongoose.connect('mongodb+srv://srinidhi:sri2004@srinidhicluster.fupcmdo.mongodb.net/passport?retryWrites=true&w=majority', {
+dotenv.config();
+
+mongoose.connect(process.env.MONGO_URI3, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then(() => console.log('Connected to MongoDB Atlas - Database: passport'))
-    .catch(err => console.error('MongoDB connection error:', err));
+    .then(() => console.log('MongoDB connected successfully'))
+    .catch(err => {
+        console.error('MongoDB connection error:', err.message);
+        process.exit(1);  
+    });
 
 const userSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true
-    }
+    username: { type: String, required: true },
+    password: { type: String, required: true }
 });
 
-const userModel=mongoose.model('User',userSchema);
+const userModel = mongoose.model('User', userSchema);
 
-module.exports=userModel;
+module.exports = userModel;

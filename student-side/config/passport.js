@@ -1,44 +1,28 @@
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const crypto = require('crypto');
-const userModel=require('./database');
-const bcrypt = require('bcrypt');
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+const userModel = require('./database.js'); // Import your user model
 
-passport.use(new LocalStrategy(
-    async function (username, password, done) {
-        try {
-            const user = await userModel.findOne({ username: username });
+const opts = {};
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken(); // Extract token from header
+opts.secretOrKey = 'abc'; // Replace with your secret key, or use dotenv for security
 
-            if (!user) {
-                return done(null, false, { message: 'Incorrect username.' });
-            }
-
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                return done(null, false, { message: 'Incorrect password.' });
-            }
-
-            return done(null, user);
-        } catch (err) {
-            return done(err);
-        }
-    }
-));
-
-passport.serializeUser(function(user,done){
-    done(null,user.id);
-});
-
-passport.deserializeUser(async function (id, done) {
+passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
+    console.log("JWT Payload:", jwt_payload); // Debugging
+    
     try {
-        const user = await userModel.findById(id);
+        // Use async/await to find the user by id
+        const user = await userModel.findById(jwt_payload.id);
         
-        if (!user) {
-            return done(null, false); // If no user is found, pass null for error and false for user
+        if (user) {
+            console.log("User found:", user); // Debugging
+            return done(null, user); // User found
+        } else {
+            console.log("User not found with this id"); // Debugging
+            return done(null, false); // No user found
         }
-
-        return done(null, user);
     } catch (err) {
-        return done(err);
+        console.log("Error finding user:", err); // Debugging
+        return done(err, false); // Error occurred
     }
-});
+}));

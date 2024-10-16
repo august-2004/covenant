@@ -1,70 +1,85 @@
-const express=require('express');
-const app=express();
-const userModel=require('./config/database');
-const {hashSync}=require('bcrypt');
-const session=require('express-session');
-const MongoStore=require('connect-mongo');
+const express = require('express');
+const app = express();
+const cors=require('cors');
+const {hashSync, compareSync}=require('bcrypt');
+const userModel=require('./config/database.js');
+const dotenv = require('dotenv');
+const jwt=require('jsonwebtoken');
 const passport = require('passport');
 
-app.set('view engine','ejs');
-app.use(express.urlencoded({ extended:true }));
+dotenv.config();
 
-app.listen(5000,(req,res) => {
-    console.log("Listening on port 5000");
-})
-
-require('./config/passport');
-
-app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({mongoUrl: 'mongodb+srv://srinidhi:sri2004@srinidhicluster.fupcmdo.mongodb.net/sessions?retryWrites=true&w=majority',collectionName:"sessions"}),
-  cookie: { 
-    maxAge: 1000*60*60*24
-   }
-}));
-
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
-app.use(passport.session());
 
-app.get('/register',(req,res) => {
-    res.render('register');
-});
+require('./config/passport.js');
 
-app.get('/login',(req,res) => {
-    res.render('login');
-});
-
-app.post('/register',(req,res) => {
-    let user=new userModel({
+app.post('/register',(req,res)=>{
+    const user=new userModel({
         username:req.body.username,
         password:hashSync(req.body.password,10)
     });
 
-    user.save().then(user=>console.log(user));
-    res.send({success:true});
-});
-
-app.post('/login',passport.authenticate('local',{successRedirect:'protected'}));
-
-app.get('/logout', (req, res, next) => {
-    req.logout((err) => {
-        if (err) {
-            return next(err);  
-        }
-        res.redirect('/login');  
+    user.save().then(user=>{
+        res.send({
+            success:true,
+            message:"user created successfully",
+            user:{
+                id:user._id,
+                username:user.username
+            }
+        });
+    }).catch(err =>{
+        res.send({
+            success:false,
+            message:"something went wrong",
+            error:err
+        });
     });
 });
 
+app.post('/login',(req,res)=>
+    userModel.findOne({ username:req.body.username}).then(user=>{
+        if(!user){
+            return res.status(401).send({
+                success:false,
+                message:"user not found"
+            });
+        }
 
-app.get('/protected',(req,res) => {
-    if(req.isAuthenticated()){
-        res.send("protected");
-    }else{
-        res.status(401).send({msg:"unauthorized"});
-    }
-    console.log(req.session);
-    console.log(req.user);
-});
+        if(!compareSync(req.body.password,user.password)){
+            return res.status(401).send({
+                success:false,
+                message:"incorrect password"
+            });
+        }
+
+        const payload={
+            username:user.username,
+            id:user._id
+        }
+        const token=jwt.sign(payload, process.env.sec, {expiresIn:"1d"});
+
+        return res.status(200).send({
+            success:true,
+            message:"logged in successfully:)))",
+            token:"Bearer "+token
+        });
+    }));
+
+app.get('/protected',passport.authenticate('jwt',{session:false}),(req,res)=>{
+    console.log("User authenticated:", req.user);
+    return res.status(200).send({
+        success:true,
+        user: {
+            id:req.user._id,
+            username:req.user.username
+        }
+    });
+});    
+
+app.listen(5000,()=>{
+    console.log("listening on port 5000");
+})    
