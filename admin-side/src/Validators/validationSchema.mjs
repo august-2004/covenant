@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body,param } from 'express-validator';
 import sanitize from 'mongo-sanitize'; 
 import xss from 'xss'; 
 
@@ -71,3 +71,17 @@ body('*.itemName')
         return true;
       })
   ];
+
+  export const validateOrderID = [
+    param('id')  
+      .exists().withMessage('OrderID is required') 
+      .isString().withMessage('OrderID must be a string') 
+      .trim() 
+      .isLength({ min: 24, max: 24 }).withMessage('OrderID must be 24 characters long') 
+      .isAlphanumeric().withMessage('Order ID must be alphanumeric') 
+      .customSanitizer((value) => {
+        const sanitizedValue = sanitize(value);
+        return xss(sanitizedValue);
+      })
+  ];
+  
