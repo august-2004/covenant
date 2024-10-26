@@ -2,7 +2,7 @@ import { Order } from "../Schemas/OrderSchema.mjs";
 import { Item } from "../Schemas/ItemSchema.mjs";
 import { Router } from "express";
 import { timeValidator } from "../Validators/timeValidator.mjs";
-import { validateOrder } from "../Validators/validationSchema.mjs";
+import { validateOrder,validateOrderID } from "../Validators/validationSchema.mjs";
 import {validationResult} from "express-validator";
 import { cancellationTimeValidator } from "../Validators/cancellationTimeValidator.mjs";
 
@@ -97,7 +97,7 @@ const deleteOrder = async (request,response,next)=>{
   }
 }
 
-orderRouter.delete("/orders/cancel/:id",async (request,response,next)=>{
+orderRouter.delete("/orders/cancel/:id",validateOrderID, async (request,response,next)=>{
   try{
     const { id } = request.params;
     const isValid = await cancellationTimeValidator(id);
@@ -113,6 +113,6 @@ orderRouter.delete("/orders/cancel/:id",async (request,response,next)=>{
   
 },deleteOrder);
 
-orderRouter.delete("/orders/:id",deleteOrder );
+orderRouter.delete("/orders/:id",validateOrderID,deleteOrder );
 
 export default orderRouter;
