@@ -1,2 +1,15 @@
 admin-side/node_modules/
 admin-side/.env
+
+student-side/node_modules/
+student-side/.expo/
+student-side/dist/
+student-side/npm-debug.*
+student-side/*.jks
+student-side/*.p8
+student-side/*.p12
+student-side/*.key
+student-side/*.mobileprovision
+student-side/*.orig.*
+student-side/web-build/
+
