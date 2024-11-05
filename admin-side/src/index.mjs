@@ -28,16 +28,17 @@ app.use(orderRouter);
 app.use(timeRouter);
 app.use(authRouter);
 
-mongoose
+try{
+	mongoose
 	.connect(
 		"mongodb+srv://thesevenstarscompany:6gCP3UgjzmaDK7Mj@meals.fgv99.mongodb.net/CanteenDB?retryWrites=true&w=majority&appName=meals"
 	)
 	.then(() => {
 		console.log("Database connected");
-	})
-	.catch((err) => {
-		console.log(`Error : ${err}`);
 	});
+}catch(err){
+	console.log(`Error : ${err}`);
+}
 
 io.on("connection", (socket) => {
 	console.log("an user connected");
