@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 
-function CancelButton({ order, decrementOrderCount }){
-  const [ isDisabled, setIsDisabled ] = useState(false);
-
-  useEffect(()=>{
-    const timer = setTimeout(()=>{
-      setIsDisabled(true);
-    }, 1000*60);
-
-    return ()=>clearTimeout(timer);
-  },[]);
+function CancelButton({ order, decrementOrderCount}){
 
   const cancelOrder = async (order)=>{
     try{
@@ -24,7 +15,7 @@ function CancelButton({ order, decrementOrderCount }){
         console.log("Order Deleted!!",order);
         decrementOrderCount();
       }else{
-        console.log("Order failed", data);
+        console.log("Order cancellation failed", data);
       }
     }catch(err){
       console.log(`Error : ${err}`);
@@ -34,7 +25,7 @@ function CancelButton({ order, decrementOrderCount }){
 
   return (
     <>
-      <button disabled={isDisabled} onClick={()=>cancelOrder(order)}>Cancel Order</button>
+      <button onClick={()=>cancelOrder(order)}>Cancel Order</button>
     </>
   )
 }
