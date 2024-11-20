@@ -9,6 +9,8 @@ import {
 import { validationResult } from "express-validator";
 import { cancellationTimeValidator } from "../Validators/cancellationTimeValidator.mjs";
 import passport from "passport";
+import appendDataToQueue from "../OrderStorage.mjs";
+
 const orderRouter = new Router();
 
 orderRouter.post(
@@ -36,8 +38,8 @@ orderRouter.post(
 					if (itemPresent) {
 						order.userID = request.user.username;
 						const newOrder = new Order(order);
-						await newOrder.save();
-						savedOrders.push(newOrder);
+						const savedOrder=await newOrder.save();
+						savedOrders.push(savedOrder);
 					} else {
 						unsavedOrders.push({
 							order: order,
@@ -49,6 +51,9 @@ orderRouter.post(
 					unsavedOrders.push({ order: order, error: "Time limit exceeded" });
 					continue;
 				}
+			}
+			if(savedOrders!==0){
+				appendDataToQueue(savedOrders)
 			}
 			if (unsavedOrders.length === 0) {
 				return response.status(200).send({ savedOrders: savedOrders });

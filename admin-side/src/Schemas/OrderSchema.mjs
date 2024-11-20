@@ -21,7 +21,7 @@ const orderSchema = mongoose.Schema({
 		required: true,
 		min: 1,
 	},
-	createdAt: {
+	createdAtTime: {
 		type: mongoose.Schema.Types.String,
 		default: () => {
 			const now = new Date();
@@ -40,6 +40,12 @@ const orderSchema = mongoose.Schema({
 			return `${day}`;
 		},
 	},
+	createdAt:{
+		type:Date,
+		default: Date.now,
+	},
 });
+
+orderSchema.index({createdAt: 1}, {expireAfterSeconds: 60});
 
 export const Order = mongoose.model("Order", orderSchema);
