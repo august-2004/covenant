@@ -62,13 +62,13 @@ itemRouter.post("/items", async (request, response) => {
 		const { itemName, mealTime } = request.body;
 		const itemPresent = await Item.findOne({ itemName, mealTime });
 		if (itemPresent) {
-			return response.status(404).send("Meal already exists.");
+			return response.status(404).json({ err: "Item already exists" });
 		}
 		const newItem = new Item({ itemName, mealTime });
 		const savedItem = await newItem.save();
 		response.status(200).json({ savedItem });
 	} catch (err) {
-		response.status(404).send(err);
+		response.status(404).json({ err });
 	}
 });
 
@@ -92,7 +92,9 @@ itemRouter.delete("/items", async (request, response) => {
 	try {
 		const { mealTime, itemName } = request.body;
 		if (!mealTime || !itemName) {
-			return response.status(400).send("ItemName and/or Mealtime fields empty");
+			return response
+				.status(400)
+				.json({ err: "ItemName and/or Mealtime fields empty" });
 		}
 		if (mealTime && itemName) {
 			const deletedItem = await Item.findOneAndDelete({
@@ -102,15 +104,13 @@ itemRouter.delete("/items", async (request, response) => {
 			if (deletedItem) {
 				return response
 					.status(200)
-					.send({ item: deletedItem, status: "Item deleted successfully" });
+					.json({ item: deletedItem, status: "Item deleted successfully" });
 			}
-			return response
-				.status(422)
-				.send({ status: "Item deletion unsuccessful" });
+			return response.status(422).json({ err: "Item deletion unsuccessful" });
 		}
 	} catch (err) {
 		console.log(err);
-		response.status(500).send({ error: err });
+		response.status(500).json({ err });
 	}
 });
 
