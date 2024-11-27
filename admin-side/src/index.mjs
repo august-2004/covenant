@@ -28,15 +28,11 @@ app.use(orderRouter);
 app.use(timeRouter);
 app.use(authRouter);
 
-try{
-	mongoose
-	.connect(
-		"mongodb+srv://thesevenstarscompany:6gCP3UgjzmaDK7Mj@meals.fgv99.mongodb.net/CanteenDB?retryWrites=true&w=majority&appName=meals"
-	)
-	.then(() => {
+try {
+	mongoose.connect(process.env.MONGO_URI).then(() => {
 		console.log("Database connected");
 	});
-}catch(err){
+} catch (err) {
 	console.log(`Error : ${err}`);
 }
 
