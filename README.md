@@ -16,7 +16,7 @@ This is the backend web server for a food ordering app designed for the Sri Kris
 Developed collaboratively by a group of friends to meet the specific needs of the college canteen.
 
 1. Vanjinathan A (Project Lead, Frontend: Student App, Backend, Authentication)
-2. Vedhavalli S (Co-Lead, Backend: Routing, Schema Design)
+2. Vedhavalli S (Co-Lead, Backend: Routing, Schema Design, Frontend)
 3. Shridevi SR (Validation)
 4. Srinidhi S (Authentication)
 5. Srinidhi B (Authentication)
