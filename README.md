@@ -21,4 +21,4 @@ Developed collaboratively by a group of friends to meet the specific needs of th
 4. Srinidhi S (Authentication)
 5. Srinidhi B (Authentication)
 6. Shri Hari A (Frontend: Admin App, Backend: WebSockets)
-7. Shurti SG (Backend)
+7. Shruti SG (Backend)
